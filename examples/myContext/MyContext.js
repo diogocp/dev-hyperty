@@ -5,6 +5,8 @@ function hypertyLoaded(result) {
 
   $('.selection-panel').hide();
 
+  console.log('[MyContext demo] started ', result);
+
   let hypertyInfo = '<span class="white-text">' +
                     '<b>Name:</b> ' + result.name + '</br>' +
                     '<b>Status:</b> ' + result.status + '</br>' +
@@ -59,102 +61,18 @@ function hypertyLoaded(result) {
 
         observer.connect(result[0].hypertyID).then(function(urlDataObject) {
           console.log('Subscribed', urlDataObject);
-          observer.ObserveBracelet(urlDataObject).then(observerDataObject => loadChart(observerDataObject.data.values[observerDataObject.data.values.length - 1].value,observerDataObject.data.values[observerDataObject.data.values.length - 2].value));
+          observer.observeAvailability(urlDataObject).then(observerDataObject => {
+
+            console.log('Hello event received:', event);
+
+            let msgPanel = $('.msg-panel');
+
+            let msg = `<p>  ` + observerDataObject.data.values + `</p>`;
+
+            msgPanel.append(msg);
+          });
         });
       });
     });
-
   });
-
-  Highcharts.setOptions({global: {useUTC: false}});
-
-  function loadChart(firstValue,batteryVl) {
-    $('#container').highcharts({
-        chart: {
-            type: 'spline',
-            animation: Highcharts.svg, // don't animate in old IE
-            marginRight: 10,
-            events: {
-                load: function() {
-                    let series = this.series[0];
-                    let lblBattery = $('.bt-label');
-                    let chart = $('#container');
-                    let lblSteps = $('.steps-label');
-                    let stepValue = $('.value_step');
-                    let batteryValue = $('.value_battery');
-                    chart.removeClass('hide');
-                    lblBattery.removeClass('hide');
-                    lblSteps.removeClass('hide');
-                    batteryValue.text(batteryVl);
-                    series.addPoint([(new Date()).getTime(), firstValue], true, true);
-                    stepValue.text(firstValue);
-
-                    observer.onChange(function(event) {
-                      console.log('new event', event);
-                      let type = event.data[0].type;
-                      console.log('type', type);
-                      if (type === 'battery') {
-                        batteryValue.text(event.data[0].value);
-                        console.log(event.data[0].value);
-                      } else if (type === 'user_steps') {
-                        let x = (new Date()).getTime();
-                        series.addPoint([x, event.data[0].value], true, true);
-                        console.log('series', series);
-                        stepValue.text(event.data[0].value);
-                        console.log(event.data[0].value);
-                      }
-                    });
-                  }
-              }
-          },
-        title: {
-            text: 'User Steps'
-          },
-        xAxis: {
-            type: 'datetime',
-            tickPixelInterval: 150
-          },
-        yAxis: {
-            title: {
-                text: 'Value'
-              },
-            plotLines: [{
-                value: 0,
-                width: 1,
-                color: '#808080'
-              }]
-          },
-        tooltip: {
-            formatter: function() {
-                return '<b>' + this.series.name + '</b><br/>' +
-                    Highcharts.dateFormat('%Y-%m-%d %H:%M:%S', this.x) + '<br/>' +
-                    Highcharts.numberFormat(this.y, 2);
-              }
-          },
-        legend: {
-            enabled: false
-          },
-        exporting: {
-            enabled: false
-          },
-        series: [{
-            name: 'Steps Data',
-            data: (function() {
-                // generate an array of random data
-                let data = [];
-                let time = (new Date()).getTime();
-                let i;
-
-                for (i = -19; i <= 0; i += 1) {
-                  data.push({
-                        x: time + i * 1000,
-                        y: firstValue
-                      });
-                }
-                return data;
-              }())
-          }]
-      });
-  }
-
 }

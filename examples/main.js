@@ -37,10 +37,6 @@ export function hypertyDeployed(hyperty) {
       script = 'user-status/user-status.js';
       break;
 
-    case 'BraceletSensorObserver':
-      template = 'bracelet/bracelet';
-      script = 'bracelet/BraceletSensorObserver.js';
-      break;
     case 'MyContext':
       template = 'myContext/myContext';
       script = 'myContext/MyContext.js';
@@ -50,7 +46,7 @@ export function hypertyDeployed(hyperty) {
   }
 
   if (!template) {
-    throw Error('You must need specify the template for your example');
+    throw Error('You must specify the template for your example');
   }
 
   getTemplate(template, script).then(function(template) {
@@ -60,7 +56,7 @@ export function hypertyDeployed(hyperty) {
     if (typeof hypertyLoaded === 'function') {
       hypertyLoaded(hyperty);
     } else {
-      let msg = 'If you need pass the hyperty to your template, create a function called hypertyLoaded';
+      let msg = 'If you need to pass the hyperty to your template, create a function called hypertyLoaded';
       console.info(msg);
       notification(msg, 'warn');
     }
