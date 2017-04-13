@@ -50,15 +50,16 @@ class MyContext {
             last = dataObject.lastModified;
             url = dataObject.url;
               //console.log('URL DATA Object', url);
-
-          if (last != 0 && ) {
-            resolve(url);
-          } else {
-            reject ('Invalid DataObjecs ', dataObjects);
-          }
-        });
+        }
       });
-  }
+      if (last != 0 && url) {
+        resolve(url);
+      } else {
+        reject ('Invalid DataObjecs ', dataObjects);
+      }
+    });
+  });
+}
 
   observeAvailability(url) {
     let _this = this;

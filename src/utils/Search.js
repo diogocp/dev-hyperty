@@ -54,12 +54,12 @@ class Search {
         usersURLs.forEach((userURL, index) => {
           let currentDomain = providedDomains[index];
           console.info('[Search] Search user ' + userURL + ' for provided domain:', currentDomain);
-          if (!globalFlag) {
-            getUsers.push(_this.discovery.discoverHyperties(userURL, schemes, resources, currentDomain));
-          } else {
-            getUsers.push(_this.discovery.discoverHypertiesPerUserProfileData(userURL, schemes, resources));
-          }
 
+            if (!globalFlag) {
+              getUsers.push(_this.discovery.discoverHyperties(userURL, schemes, resources, currentDomain));
+            } else {
+              getUsers.push(_this.discovery.discoverHypertiesPerUserProfileData(userURL, schemes, resources));
+            }
         });
 
         console.info('Requests promises: ', getUsers);
