@@ -1,0 +1,14 @@
+{
+  "configuration": {},
+  "hypertyType": [
+    "availability"
+  ],
+  "constraints": {
+    "browser": true
+  },
+  "language": "javascript",
+  "signature": "",
+  "dataObjects": [
+    "https://catalogue.localhost/.well-known/dataschema/Context"
+  ]
+}
