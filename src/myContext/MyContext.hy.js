@@ -18,7 +18,7 @@ class MyContext {
 
     console.log('[MyContext Hyperty] Init : ', hypertyURL);
     _this._syncher = new Syncher(hypertyURL, bus, configuration);
-    let discovery = new Discovery(hypertyURL, bus);
+    let discovery = new Discovery(hypertyURL, configuration.runtimeURL, bus);
     _this._discovery = discovery;
     _this.identityManager = identityManager;
     _this.search = new Search(discovery, identityManager);
@@ -40,15 +40,22 @@ class MyContext {
   {
     let _this = this;
     return new Promise(function(resolve,reject) {
-        _this._discovery.discoverDataObjectPerReporter(hypertyID, _this._domain).then(function(dataObject) {
-          console.log('[MyContext] discovered user status object ', dataObject);
+        _this._discovery.discoverDataObjectsPerReporter(hypertyID, ['context'], ['availability'],  _this._domain).then(function(dataObjects) {
+          console.log('[MyContext] discovered user status objects ', dataObjects);
+        let last = 0;
+        let url;
 
-          if (dataObject.hasOwnProperty('url')) {
-            let url = dataObject.url;
-            //console.log('URL DATA Object', url);
+          dataObjects.forEach( (dataObject) => {
+            if (dataObject.hasOwnProperty('lastModified') && dataObject.hasOwnProperty('url') && dataObject.lastModified > last) {
+              last = dataObject.lastModified;
+              url = dataObject.url;
+              //console.log('URL DATA Object', url);
+          });
+
+          if (last != 0 && ) {
             resolve(url);
           } else {
-            reject ('Invalid DataObjec t', dataObject);
+            reject ('Invalid DataObjecs ', dataObjects);
           }
         });
       });
