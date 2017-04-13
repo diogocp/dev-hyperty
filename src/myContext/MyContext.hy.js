@@ -45,12 +45,11 @@ class MyContext {
         let last = 0;
         let url;
 
-          dataObjects.forEach( (dataObject) => {
-            if (dataObject.hasOwnProperty('lastModified') && dataObject.hasOwnProperty('url') && dataObject.lastModified > last) {
-              last = dataObject.lastModified;
-              url = dataObject.url;
+        dataObjects.forEach( (dataObject) => {
+          if (dataObject.hasOwnProperty('lastModified') && dataObject.hasOwnProperty('url') && dataObject.lastModified > last) {
+            last = dataObject.lastModified;
+            url = dataObject.url;
               //console.log('URL DATA Object', url);
-          });
 
           if (last != 0 && ) {
             resolve(url);
