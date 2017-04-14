@@ -181,8 +181,9 @@ class UserStatus extends EventEmitter {
     let _this = this;
     console.log('[UserStatus.setStatus] before change :', _this.statusObjectReporter.data);
 
-    let value = {value: newStatus, time: new Date().getTime()};
-    _this.statusObjectReporter.data.values.push(value);
+    let newTime =  new Date().toISOString();;
+    let value = {value: newStatus, time: newTime};
+    _this.statusObjectReporter.data.values[0] = value;
     console.debug('[UserStatus.setStatus] after change :', _this.statusObjectReporter.data);
   }
 
@@ -191,8 +192,8 @@ class UserStatus extends EventEmitter {
    */
   sendHeartbeat() {
     let _this = this;
-    console.log('send heartbeat');
-    _this.statusObjectReporter.data.time = (new Date()).getTime();
+    /*console.log('send heartbeat');
+    _this.statusObjectReporter.data.time = (new Date()).getTime();*/
   }
 
   /**

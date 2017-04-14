@@ -61,15 +61,23 @@ function hypertyLoaded(result) {
 
         observer.connect(result[0].hypertyID).then(function(urlDataObject) {
           console.log('Subscribed', urlDataObject);
+
+
           observer.observeAvailability(urlDataObject).then(observerDataObject => {
 
-            console.log('Hello event received:', event);
+            console.log('[MyContext demo] observing: ', observerDataObject.data.values[0].value);
 
-            let msgPanel = $('.msg-panel');
+            observer.addEventListener('user-status', function(event) {
 
-            let msg = `<p>  ` + observerDataObject.data.values + `</p>`;
+                console.log('User Status event received:', event);
 
-            msgPanel.append(msg);
+                let msgPanel = $('.msg-panel');
+
+                let msg = `<p>  ` + observerDataObject.data.values[0].value + `</p>`;
+
+                msgPanel.append(msg);
+
+              });
           });
         });
       });

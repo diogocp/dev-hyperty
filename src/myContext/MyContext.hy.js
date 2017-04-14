@@ -3,13 +3,17 @@ import {Syncher} from 'service-framework/dist/Syncher';
 import Discovery from 'service-framework/dist/Discovery';
 import {divideURL} from '../utils/utils';
 import Search from '../utils/Search';
+import EventEmitter from '../utils/EventEmitter';
 
-class MyContext {
+class MyContext extends EventEmitter {
 
   constructor(hypertyURL, bus, configuration) {
     if (!hypertyURL) throw new Error('The hypertyURL is a needed parameter');
     if (!bus) throw new Error('The MiniBus is a needed parameter');
     if (!configuration) throw new Error('The configuration is a needed parameter');
+
+    super();
+
     let _this = this;
     let identityManager = new IdentityManager(hypertyURL, configuration.runtimeURL, bus);
     console.log('hypertyURL->', hypertyURL);
@@ -65,12 +69,16 @@ class MyContext {
     let _this = this;
     return new Promise(function(resolve,reject) {
         _this._syncher.subscribe(_this._objectDescURL, url).then((observer) => {
-          console.log('data object observer', observer);
+          console.log('[MyContxt.observeAvailability] observer object', observer);
+
           resolve(observer);
+
           observer.onChange('*', (event) => {
             console.log('event->->->->->:', event);
 
-            if (_this._onChange) _this._onChange(event);
+            _this.trigger('user-status', event.data);
+
+            if (_this._onChange) _this.onChange(event);
           });
         });
       });
