@@ -101,7 +101,7 @@ class UserStatus extends EventEmitter {
 
   /**
    * This function is used to create a new status object syncher
-   * @param  {URL.UserURL} contacts List of Users 
+   * @param  {URL.UserURL} contacts List of Users
    * @return {Promise}
    */
   create(contacts) {
@@ -140,7 +140,7 @@ class UserStatus extends EventEmitter {
     console.info('------------------------ Syncher Create ----------------------', hyperties, status);
     return _this.syncher.create(_this.userStatusDescURL, hyperties, status);
   }
-   
+
   onInvitation(callback) {
     let _this = this;
     _this.onInvitation = callback;
@@ -179,10 +179,11 @@ class UserStatus extends EventEmitter {
 
   setStatus(newStatus) {
     let _this = this;
-    console.log('setStatus', newStatus, 'in reporter', _this.statusObjectReporter.data);
-    _this.statusObjectReporter.data.values[0].value = newStatus;
-    console.debug('this._statusObjectReporter.data :', _this.statusObjectReporter.data);
-    _this.statusObjectReporter.data.time = (new Date()).getTime();
+    console.log('[UserStatus.setStatus] before change :', _this.statusObjectReporter.data);
+
+    let value = {value: newStatus, time: new Date().getTime()};
+    _this.statusObjectReporter.data.values.push(value);
+    console.debug('[UserStatus.setStatus] after change :', _this.statusObjectReporter.data);
   }
 
   /**
@@ -221,7 +222,7 @@ class UserStatus extends EventEmitter {
         let lastHyperty;
 
         new Promise(function(resolve, reject) {
-       
+
           for (var i = 0; i < hypertyObj.length; i++) {
 
           if (hypertyObj[i].lastModified !== undefined) {
@@ -238,9 +239,9 @@ class UserStatus extends EventEmitter {
           }
         }
 
-        console.log('Last Hyperty: ', lastHyperty, mostRecent);       
+        console.log('Last Hyperty: ', lastHyperty, mostRecent);
         resolve(lastHyperty);
-   
+
     }).catch((reason) => {
       console.error('Error Happened while geting Lateast Hyperty per user reason:', reason);
         reject();

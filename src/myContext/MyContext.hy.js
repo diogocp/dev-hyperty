@@ -46,7 +46,7 @@ class MyContext {
         let url;
 
         dataObjects.forEach( (dataObject) => {
-          if (dataObject.hasOwnProperty('lastModified') && dataObject.hasOwnProperty('url') && dataObject.lastModified > last) {
+          if (dataObject.hasOwnProperty('lastModified') && dataObject.hasOwnProperty('url') && Date.parse(dataObject.lastModified) > last) {
             last = dataObject.lastModified;
             url = dataObject.url;
               //console.log('URL DATA Object', url);
