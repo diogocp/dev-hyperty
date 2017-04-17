@@ -33,6 +33,7 @@ class MyContext extends EventEmitter {
   {
     let _this = this;
     return new Promise(function(resolve,reject) {
+      //todo: replace by discovery.discoverDataObjectsPerUserProfileData(myIdentifier, ['context'], ['availability']);
       _this.search.users([email], [domain], ['context'], ['availability']).then(function(a) {
         console.log('result search users->', a);
         resolve(a);
