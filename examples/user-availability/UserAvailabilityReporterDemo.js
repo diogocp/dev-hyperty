@@ -15,22 +15,14 @@ function hypertyLoaded(result) {
   $('.card-panel').html(hypertyInfo);
 
   userStatusHy = result.instance;
-  let userDirectory = [
-      ['openidtest10@gmail.com', 'localhost'],
-      ['openidtest20@gmail.com', 'localhost']
-  ];
 
   let contacts = [];
-  Handlebars.getTemplate('user-status/user-card').then(function(template) {
-    $.each(userDirectory, function(i, v) {
-      $('.user-list').append(template({email: v[0]}));
-      contacts.push({email: v[0], domain: v[1]});
-    });
+  Handlebars.getTemplate('user-availability/user-card').then(function(template) {
     $('.btn-change-state').on('click', function() {
       userStatusHy.setStatus($(this).attr('rel'));
     });
-    
-    userStatusHy.create(contacts).then(function(res) {
+
+    userStatusHy.create().then(function(res) {
       console.info(res);
     }).catch(function(reason) {
       console.error(reason);

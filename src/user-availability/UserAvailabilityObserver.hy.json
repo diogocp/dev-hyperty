@@ -1,7 +1,7 @@
 {
   "configuration": {},
   "hypertyType": [
-    "availability"
+    "availability_context"
   ],
   "constraints": {
     "browser": true

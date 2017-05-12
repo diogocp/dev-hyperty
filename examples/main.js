@@ -18,6 +18,8 @@ export function hypertyDeployed(hyperty) {
   let template = '';
   let script = '';
 
+  console.info('[main.hypertyDeployed] loading demo for Hyperty: ', hyperty.name)
+
   switch (hyperty.name) {
     case 'HelloWorldObserver':
       template = 'hello-world/helloWorld';
@@ -32,10 +34,17 @@ export function hypertyDeployed(hyperty) {
       template = 'location/location';
       script = 'location/location.js';
       break;
-    case 'UserStatus':
-      template = 'user-status/UserStatus';
-      script = 'user-status/user-status.js';
+
+    case 'UserAvailabilityObserver':
+      template = 'user-availability/userAvailabilityObserver';
+      script = 'user-availability/UserAvailabilityObserverDemo.js';
       break;
+
+    case 'UserAvailabilityReporter':
+      template = 'user-availability/userAvailabilityReporter';
+      script = 'user-availability/UserAvailabilityReporterDemo.js';
+      break;
+
 
     case 'MyContext':
       template = 'myContext/myContext';
@@ -46,7 +55,7 @@ export function hypertyDeployed(hyperty) {
   }
 
   if (!template) {
-    throw Error('You must specify the template for your example');
+    throw Error('You must specify the template for your example: ', hyperty.name);
   }
 
   getTemplate(template, script).then(function(template) {
