@@ -55,17 +55,22 @@ function hypertyLoaded(result) {
       let subscribe = $('.subscribe-btn');
 
       subscribe.on('click', function(event) {
-        console.log('ON SUBSCRIBEE', event);
+        console.log('[UserAvailabilityObserverDemo] ON SUBSCRIBE', event);
 
         event.preventDefault();
 
         observer.connect(result[0].hypertyID).then(function(urlDataObject) {
-          console.log('Subscribed', urlDataObject);
-
+          console.log('[UserAvailabilityObserverDemo] Subscribed', urlDataObject);
 
           observer.observeAvailability(urlDataObject).then(observerDataObject => {
 
-            console.log('[MyContext demo] observing: ', observerDataObject.data.values[0].value);
+            console.log('[UserAvailabilityObserverDemo] observing: ', observerDataObject.data.values[0].value);
+
+            let msgPanel = $('.msg-panel');
+
+            let msg = `<p>  ` + observerDataObject.data.values[0].value + `</p>`;
+
+            msgPanel.append(msg);
 
             observer.addEventListener('user-status', function(event) {
 

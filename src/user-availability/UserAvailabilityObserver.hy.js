@@ -37,11 +37,25 @@ class UserAvailabilityObserver extends EventEmitter {
       //_this.search.users([email], [domain], ['context'], ['availability_context']).then(function(a) {
         console.log('[UserAvailabilityObserver.discovery] discovery result->', hyperties);
         let discovered = [];
+        let disconnected = [];
         hyperties.forEach(hyperty =>{
-          discovered.push(hyperty.data);
+          if (hyperty.data.status === 'live') {
+              discovered.push(hyperty.data);
+          } else {
+            disconnected.push(hyperty);
+            };
         });
-        console.log('[UserAvailabilityObserver.discovery] returning discovered hyperties data->', discovered);
-        resolve(discovered);
+
+        if (discovered.length > 0) {
+          console.log('[UserAvailabilityObserver.discovery] returning discovered hyperties data->', discovered);
+          resolve(discovered);
+        } else if (disconnected.length > 0) {
+          console.log('[UserAvailabilityObserver.discovery] Waiting when disconnected Hyperty is back to live->', disconnected);
+          disconnected[0].onLive(()=>{
+            discovered.push(disconnected[0].data);
+            resolve(discovered);
+          });
+        }
       });
     });
   }
