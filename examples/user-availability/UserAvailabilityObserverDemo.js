@@ -1,6 +1,8 @@
 // jshint browser:true, jquery: true
 // jshint varstmt: false
 
+let observer;
+
 function hypertyLoaded(result) {
 
   $('.selection-panel').hide();
@@ -16,12 +18,31 @@ function hypertyLoaded(result) {
 
   console.log('UserAvailabilityObserverDemo Waiting!!');
 
+  observer = result.instance;
+
+  observer.onResumeObserver((userAvailability) => {
+    console.log('[UserAvailabilityObserverDemo - on Resume observers] :', userAvailability);
+
+    if (userAvailability) {
+      console.log('[UserAvailabilityObserverDemo - on Resume observers] resuming:', userAvailability);
+      observeUserAvailability(observer, userAvailability);
+
+    } else {
+      console.log('[UserAvailabilityObserverDemo] Nothing to be resumed. Lets discover users availability to observer ');
+      discoverUsers(observer);
+    }
+  });
+  observer.start();
+}
+
+function discoverUsers(observer) {
   let email = $('.email-input');
   let domain = $('.domain-input');
-  let observer = result.instance;
 
   let searchForm = $('.search-form');
   let discoveryEl = $('.discover');
+
+  observer = observer;
 
   discoveryEl.removeClass('hide');
 
@@ -64,28 +85,33 @@ function hypertyLoaded(result) {
 
           observer.observeAvailability(urlDataObject).then(observerDataObject => {
 
-            console.log('[UserAvailabilityObserverDemo] observing: ', observerDataObject.data.values[0].value);
-
-            let msgPanel = $('.msg-panel');
-
-            let msg = `<p>  ` + observerDataObject.data.values[0].value + `</p>`;
-
-            msgPanel.append(msg);
-
-            observer.addEventListener('user-status', function(event) {
-
-                console.log('User Status event received:', event);
-
-                let msgPanel = $('.msg-panel');
-
-                let msg = `<p>  ` + observerDataObject.data.values[0].value + `</p>`;
-
-                msgPanel.append(msg);
-
-              });
+            observeUserAvailability(observer, observerDataObject);
           });
         });
       });
     });
   });
+}
+
+function observeUserAvailability(observer, userAvailability) {
+  console.log('[UserAvailabilityObserverDemo.observeUserAvailability]: ', userAvailability);
+
+  let msgPanel = $('.msg-panel');
+
+  if (userAvailability.data && userAvailability.data.values && userAvailability.data.values.legth > 0) {
+    let msg = `<p>  ` + userAvailability.data.values[0].value + `</p>`;
+    msgPanel.append(msg);
+  }
+
+  observer.addEventListener('user-status', function(event) {
+
+      console.log('User Status event received:', event);
+
+      let msgPanel = $('.msg-panel');
+
+      let msg = `<p>  ` + userAvailability.data.values[0].value + `</p>`;
+
+      msgPanel.append(msg);
+
+    });
 }

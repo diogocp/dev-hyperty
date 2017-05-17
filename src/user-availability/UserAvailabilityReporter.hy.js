@@ -45,6 +45,8 @@ class UserAvailabilityReporter extends EventEmitter {
     if (!configuration) throw new Error('The configuration is a needed parameter');
 
     super(hypertyURL, bus, configuration);
+    let _this = this;
+
     console.info('[UserAvailabilityReporter] started with url: ', hypertyURL);
 
     this.syncher = new Syncher(hypertyURL, bus, configuration);
@@ -54,6 +56,7 @@ class UserAvailabilityReporter extends EventEmitter {
 
     this.userAvailabilityyDescURL = 'hyperty-catalogue://catalogue.' + this.domain + '/.well-known/dataschema/Context';
 
+
 //    this.heartbeat = [];
 
     this.syncher.onNotification((event) => {
@@ -61,6 +64,38 @@ class UserAvailabilityReporter extends EventEmitter {
       _this.onNotification(event);
     });
   }
+
+start(){
+  let _this = this;
+
+  this.syncher.resumeReporters({store: true}).then((reporters) => {
+
+    let reportersList = Object.keys(reporters);
+
+    if (reportersList.length  > 0) {
+
+    console.log('[UserAvailabilityReporter].syncher.resumeReporters ', reporters[0]);
+    // set availability to available
+
+    _this.userAvailability = reporters[0];
+    _this.userAvailability.setStatus('available');
+    _this._onSubscription(_this.userAvailability);
+
+    _this._onResumeReporter(_this.userAvailability);
+  } else {
+    _this._onResumeReporter(false);
+  }
+
+  }).catch((reason) => {
+    console.info('Resume Reporter | ', reason);
+    if (_this._onResumeReporter) _this._onResumeReporter(false);
+});
+}
+
+onResumeReporter(callback) {
+   let _this = this;
+   _this._onResumeReporter = callback;
+ }
 
   onNotification(event) {
     let _this = this;
@@ -85,10 +120,7 @@ class UserAvailabilityReporter extends EventEmitter {
       .then((userAvailability) => {
         _this.userAvailability = userAvailability;
 
-        _this.userAvailability.onSubscription((event) => {
-          console.info('[UserAvailabilityReporterReporter.onSubscription] accepting: ', event);
-          event.accept();
-        });
+        _this._onSubscription(userAvailability);
 
       }).catch(function(reason) {
         reject(reason);
@@ -96,6 +128,13 @@ class UserAvailabilityReporter extends EventEmitter {
 
     });
 
+  }
+
+  _onSubscription(userAvailability){
+    userAvailability.onSubscription((event) => {
+      console.info('[UserAvailabilityReporterReporter._onSubscription] accepting: ', event);
+      event.accept();
+    });
   }
 
   setStatus(newStatus) {

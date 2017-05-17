@@ -1,6 +1,6 @@
 /* global $, Handlebars */
 
-let userStatusHy;
+let userAvailabilityHy;
 
 
 function hypertyLoaded(result) {
@@ -14,26 +14,38 @@ function hypertyLoaded(result) {
 
   $('.card-panel').html(hypertyInfo);
 
-  userStatusHy = result.instance;
+  userAvailabilityHy = result.instance;
 
   let contacts = [];
   Handlebars.getTemplate('user-availability/user-card').then(function(template) {
     $('.btn-change-state').on('click', function() {
-      userStatusHy.setStatus($(this).attr('rel'));
+      userAvailabilityHy.setStatus($(this).attr('rel'));
     });
 
-    userStatusHy.create().then(function(res) {
-      console.info(res);
-    }).catch(function(reason) {
-      console.error(reason);
+  userAvailabilityHy.onResumeReporter((userAvailability) => {
+    console.log('[userAvailabilityReporterDemo - on Resume reporters] :', userAvailability);
+
+    if (userAvailability) {
+      console.log('[userAvailabilityReporterDemo - on Resume reporters] resuming:', userAvailability);
+
+    } else {
+      userAvailabilityHy.create().then(function(availability) {
+          console.info('[userAvailabilityReporterDemo] new: ', availability);
+          availability.data.values.value = 'available';
+        }).catch(function(reason) {
+          console.error(reason);
+        });
+      }
     });
   });
 
-  userStatusHy.addEventListener('statusChange', function(event) {
+userAvailabilityHy.start();
+
+  /*userAvailabilityHy.addEventListener('statusChange', function(event) {
     console.debug('handle statusChange event for', event);
     let email = (typeof event !== 'undefined' && typeof event.identity !== 'undefined') ? event.identity.userProfile.username : 'none';
     $('#user-list').children('[rel="' + email + '"]').removeClass('state-available state-unavailable state-busy state-away').addClass('state-' + event.status);
-  });
+  });*/
 }
 
 Handlebars.getTemplate = function(name) {

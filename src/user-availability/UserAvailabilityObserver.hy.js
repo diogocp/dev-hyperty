@@ -26,7 +26,39 @@ class UserAvailabilityObserver extends EventEmitter {
     //_this.identityManager = identityManager;
     //_this.search = new Search(discovery, identityManager);
     window.discovery = _this._discovery;
+
+
   }
+
+  start () {
+    let _this = this;
+
+    _this._syncher.resumeObservers({store: true}).then((observers) => {
+
+      let observersList = Object.keys(observers);
+
+      if (observersList.length  > 0) {
+
+      console.log('[UserAvailabilityObserver.start] resuming: ', observers[observersList[0]]);
+      // set availability to available
+
+      _this.userAvailability = observers[observersList[0]];
+      _this._onResumeObserver(_this.userAvailability);
+    } else {
+      _this._onResumeObserver(false);
+    }
+
+    }).catch((reason) => {
+      console.info('[UserAvailabilityObserver] Resume Observer failed | ', reason);
+      _this._onResumeObserver(false);
+    });
+  }
+
+  onResumeObserver(callback) {
+     let _this = this;
+     _this._onResumeObserver = callback;
+   }
+
 
   discovery(email,domain)
   {
