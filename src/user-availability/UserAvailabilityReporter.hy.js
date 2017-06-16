@@ -66,13 +66,15 @@ class UserAvailabilityReporter extends EventEmitter {
       _this.onNotification(event);
     });
 
-    this.syncher.onClose((event) => {
+    //TODO: uncomment when used with service framework develop branch
+
+/*    this.syncher.onClose((event) => {
 
       console.log('[UserAvailabilityReporter.onClose]')
       let _this = this;
       _this.setStatus('unavailable');
       event.ack();
-    });
+    });*/
 
   }
 

@@ -71,14 +71,14 @@ class UserAvailabilityObserver extends EventEmitter {
     let _this = this;
     return new Promise(function(resolve,reject) {
       //TODO: replace by _discovery.discoverHypertiesDO(..) when DR notification works
-      _this._discovery.discoverHyperties(email, ['context'], ['availability_context'], domain).then(hyperties =>{
+      _this._discovery.discoverHypertiesDO(email, ['context'], ['availability_context'], domain).then(hyperties =>{
       //_this.search.users([email], [domain], ['context'], ['availability_context']).then(function(a) {
         console.log('[UserAvailabilityObserver.discoverUsers] discovery result->', hyperties);
         let discovered = [];
         let disconnected = [];
         hyperties.forEach(hyperty =>{
-          if (hyperty.status === 'live') {
-            discovered.push(hyperty);
+          if (hyperty.data.status === 'live') {
+            discovered.push(hyperty.data);
           } else {
             disconnected.push(hyperty);
             };
@@ -89,14 +89,13 @@ class UserAvailabilityObserver extends EventEmitter {
           resolve(discovered);
         } else if (disconnected.length > 0) {
           console.log('[UserAvailabilityObserver.discoverUsers] disconnected Hyperties ', disconnected);
-          resolve([]);
+          //resolve([]);
 
           //TODO: uncommented below when DR notification works
-          /*
           disconnected[0].onLive(()=>{
             discovered.push(disconnected[0].data);
             resolve(discovered);
-          });*/
+          });
         }
       });
     });
