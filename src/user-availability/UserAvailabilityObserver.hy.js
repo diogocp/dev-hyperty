@@ -15,6 +15,7 @@ class UserAvailabilityObserver extends EventEmitter {
     super();
 
     let _this = this;
+    _this._url = hypertyURL;
     //let identityManager = new IdentityManager(hypertyURL, configuration.runtimeURL, bus);
     console.log('[UserAvailabilityObserver] started with hypertyURL->', hypertyURL);
     _this._domain = divideURL(hypertyURL).domain;
@@ -92,7 +93,9 @@ class UserAvailabilityObserver extends EventEmitter {
           //resolve([]);
 
           //TODO: uncommented below when DR notification works
-          disconnected[0].onLive(()=>{
+          disconnected[0].onLive(_this._url,()=>{
+            console.log('[UserAvailabilityObserver.discoverUsers] disconnected Hyperty is back to live', disconnected[0]);
+
             discovered.push(disconnected[0].data);
             resolve(discovered);
           });
