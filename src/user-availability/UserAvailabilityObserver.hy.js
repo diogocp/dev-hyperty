@@ -26,6 +26,8 @@ class UserAvailabilityObserver extends EventEmitter {
     _this._syncher = new Syncher(hypertyURL, bus, configuration);
     let discovery = new Discovery(hypertyURL, configuration.runtimeURL, bus);
     _this._discovery = discovery;
+
+    _this._discoveries = {}; //list of discovered objects
     //_this.identityManager = identityManager;
     //_this.search = new Search(discovery, identityManager);
     window.discovery = _this._discovery;
@@ -78,6 +80,7 @@ class UserAvailabilityObserver extends EventEmitter {
         let discovered = [];
         let disconnected = [];
         hyperties.forEach(hyperty =>{
+          _this._discoveries[hyperty.data.hypertyID];
           if (hyperty.data.status === 'live') {
             discovered.push(hyperty.data);
           } else {
@@ -127,7 +130,7 @@ class UserAvailabilityObserver extends EventEmitter {
           }
         });
         if (last != 0 && url) {
-          resolve(_this._subscribeAvailability(hyperty.userID, url));
+          resolve(_this._subscribeAvailability(hyperty, url));
         } else {
           reject ('[UserAvailabilityObserver.discoverAvailability] discovered DataObjecs are invalid', dataObjects);
         }
@@ -135,7 +138,7 @@ class UserAvailabilityObserver extends EventEmitter {
     });
   }
 
-  _subscribeAvailability(userID, url) {
+  _subscribeAvailability(hyperty, url) {
     let _this = this;
     return new Promise(function(resolve,reject) {
         _this._syncher.subscribe(_this._objectDescURL, url).then((availability) => {
@@ -144,6 +147,14 @@ class UserAvailabilityObserver extends EventEmitter {
           //let newUserAvailability = new UserAvailabilityController(availability, userID);
 
           _this._users2observe.push(availability);
+
+          // When hyperty is disconnected set user availability status as unavailable
+          if (_this._discoveries[hyperty.hypertyID])
+          _this._discoveries[hyperty.hypertyID].onDisconnected(_this._url,()=>{
+            console.log('[UserAvailabilityObserver.onDisconnected]: ', hyperty);
+
+            availability.data.values[0].value = 'unavailable';
+          });
 
           resolve(availability);
         });
