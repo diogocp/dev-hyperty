@@ -95,9 +95,10 @@ class UserAvailabilityObserver extends EventEmitter {
           console.log('[UserAvailabilityObserver.discoverUsers] disconnected Hyperties ', disconnected);
           //resolve([]);
 
-          //TODO: uncommented below when DR notification works
           disconnected[0].onLive(_this._url,()=>{
             console.log('[UserAvailabilityObserver.discoverUsers] disconnected Hyperty is back to live', disconnected[0]);
+
+            disconnected[0].unsubscribe(_this._url);
 
             discovered.push(disconnected[0].data);
             resolve(discovered);
