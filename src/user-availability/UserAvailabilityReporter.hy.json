@@ -1,5 +1,5 @@
 {
-  "configuration": { "expires": 30},
+  "configuration": { "expires": 300},
   "hypertyType": [
     "availability_context"
   ],
