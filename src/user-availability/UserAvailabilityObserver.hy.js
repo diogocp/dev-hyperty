@@ -80,7 +80,7 @@ class UserAvailabilityObserver extends EventEmitter {
         let discovered = [];
         let disconnected = [];
         hyperties.forEach(hyperty =>{
-          _this._discoveries[hyperty.data.hypertyID];
+          _this._discoveries[hyperty.data.hypertyID] = hyperty;
           if (hyperty.data.status === 'live') {
             discovered.push(hyperty.data);
           } else {
