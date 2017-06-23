@@ -22,6 +22,7 @@ class UserAvailabilityObserver extends EventEmitter {
     _this._objectDescURL = 'hyperty-catalogue://catalogue.' + _this._domain + '/.well-known/dataschema/Context';
 
     _this._users2observe = [];
+    _this._observers = {};
 
     _this._syncher = new Syncher(hypertyURL, bus, configuration);
     let discovery = new Discovery(hypertyURL, configuration.runtimeURL, bus);
@@ -48,9 +49,21 @@ class UserAvailabilityObserver extends EventEmitter {
         /*observersList.forEach((i)=>{
           _this._users2observe.push(new UserAvailabilityController(observers[i]));
         });*/
+        _this._observers = observers;
 
         resolve(observers);
-      } else {
+
+        // TODO: add onDisconnected to DataObjectObserver and invoke for each resumed observer
+        observersList.forEach((observer) =>{
+          observers[observer].onDisconnected(()=>{
+            console.log('[UserAvailabilityObserver.onDisconnected]: ', observers[observer]);
+
+            observers[observer].data.values[0].value = 'unavailable';
+          });
+        });
+
+
+        } else {
         resolve(false);
       }
 
@@ -148,10 +161,9 @@ class UserAvailabilityObserver extends EventEmitter {
 
           _this._users2observe.push(availability);
 
-          // When hyperty is disconnected set user availability status as unavailable
-          if (_this._discoveries[hyperty.hypertyID])
-          _this._discoveries[hyperty.hypertyID].onDisconnected(_this._url,()=>{
-            console.log('[UserAvailabilityObserver.onDisconnected]: ', hyperty);
+          // When Object is disconnected set user availability status as unavailable
+          availability.onDisconnected(()=>{
+            console.log('[UserAvailabilityObserver.onDisconnected]: ', availability);
 
             availability.data.values[0].value = 'unavailable';
           });
