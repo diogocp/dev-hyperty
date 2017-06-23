@@ -100,7 +100,7 @@ class UserAvailabilityObserver extends EventEmitter {
 
             discovered.push(disconnected[0].data);
             resolve(discovered);
-            disconnected[0].unsubscribe(_this._url);
+            disconnected[0].unsubscribeLive(_this._url);
           });
         }
       });
