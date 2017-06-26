@@ -55,10 +55,19 @@ class UserAvailabilityObserver extends EventEmitter {
 
         // TODO: add onDisconnected to DataObjectObserver and invoke for each resumed observer
         observersList.forEach((observer) =>{
-          observers[observer].onDisconnected(()=>{
+          let availability = observers[observer]
+
+          // By default resumed availability is unavailable. It will be updated with value synchronized with reporter if connected
+          availability.data.values[0].value = 'unavailable';
+          availability.sync();
+
+          //Add listener to be notified when reporter is abruptly disconnected
+          availability.onDisconnected(()=>{
             console.log('[UserAvailabilityObserver.onDisconnected]: ', observers[observer]);
 
-            observers[observer].data.values[0].value = 'unavailable';
+            availability.data.values[0].value = 'unavailable';
+            // to avoid false disconnects
+            availability.sync();
           });
         });
 
