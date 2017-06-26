@@ -34,8 +34,10 @@ class UserAvailabilityObserver extends EventEmitter {
     window.discovery = _this._discovery;
   }
 
-  start () {
+
+  start() {
     let _this = this;
+    console.log('[UserAvailabilityObserver.start] ');
 
     return new Promise((resolve, reject) => {
       _this._syncher.resumeObservers({store: true}).then((observers) => {
@@ -44,9 +46,9 @@ class UserAvailabilityObserver extends EventEmitter {
 
         if (observersList.length  > 0) {
 
-        console.log('[UserAvailabilityObserver.start] resuming: ', observers);
+          console.log('[UserAvailabilityObserver.start] resuming: ', observers);
 
-        /*observersList.forEach((i)=>{
+          /*observersList.forEach((i)=>{
           _this._users2observe.push(new UserAvailabilityController(observers[i]));
         });*/
         _this._observers = observers;
@@ -72,17 +74,44 @@ class UserAvailabilityObserver extends EventEmitter {
         });
 
 
-        } else {
+      } else {
         resolve(false);
       }
 
-      }).catch((reason) => {
-        console.info('[UserAvailabilityObserver] Resume Observer failed | ', reason);
-        resolve(false);
-      });
     }).catch((reason) => {
+      console.info('[UserAvailabilityObserver] Resume Observer failed | ', reason);
+      resolve(false);
+    });
+  }).catch((reason) => {
     reject('[UserAvailabilityObserver] Start failed | ', reason);
   });
+}
+
+resumeDiscoveries() {
+  let _this = this;
+
+  return new Promise((resolve, reject) => {
+    _this._discovery.resumeDiscoveries().then((discoveries) => {
+
+      console.log('[UserAvailabilityObserver._resumeDiscoveries] found: ', discoveries);
+
+      discoveries.forEach((discovery) =>{
+
+        if (discovery.data.resources && discovery.data.resources[0] === 'availability_context') {
+          console.log('[UserAvailabilityObserver._resumeDiscoveries] resuming: ', discovery);
+
+          discovery.onLive(_this._url,()=>{
+            console.log('[UserAvailabilityObserver._resumeDiscoveries] disconnected Hyperty is back to live', discovery);
+
+            resolve([discovery.data]);
+            discovery.unsubscribeLive(_this._url);
+          });
+        }
+      });
+    });
+  }).catch((reason) => {
+  reject('[UserAvailabilityObserver] resumeDiscoveries failed | ', reason);
+});
 }
 
   onResumeObserver(callback) {
@@ -175,6 +204,7 @@ class UserAvailabilityObserver extends EventEmitter {
             console.log('[UserAvailabilityObserver.onDisconnected]: ', availability);
 
             availability.data.values[0].value = 'unavailable';
+            availability.sync();
           });
 
           resolve(availability);
